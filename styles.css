@@ -1,167 +1,189 @@
 body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f8f9fa;
-    color: #495057;
+    font-family: 'Roboto', sans-serif; /* Используем шрифт Roboto из Google Fonts */
+    margin: 0; /* Убираем стандартные отступы */
+    padding: 0; /* Убираем стандартные поля */
+    background-color: #f8f9fa; /* Устанавливаем светло-серый цвет фона */
+    color: #495057; /* Устанавливаем темно-серый цвет текста */
 }
 
 header {
-    background-color: #3b5998;
-    color: white;
-    text-align: center;
-    padding: 1rem 0;
-    border-bottom: 3px solid #2d4373;
+    background-color: #3b5998; /* Устанавливаем темно-синий цвет фона для заголовка */
+    color: white; /* Устанавливаем белый цвет текста для заголовка */
+    text-align: center; /* Выравниваем текст по центру */
+    padding: 1rem 0; /* Добавляем вертикальные отступы */
+    border-bottom: 3px solid #2d4373; /* Добавляем нижнюю границу */
 }
 
 .search-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px;
+    display: flex; /* Используем flexbox для макета */
+    justify-content: center; /* Центрируем содержимое по горизонтали */
+    margin: 20px; /* Добавляем отступы вокруг контейнера */
 }
 
 #search {
-    width: 50%;
-    padding: 10px;
-    font-size: 16px;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    background-color: #f1f1f1;
+    width: 50%; /* Устанавливаем ширину поля поиска */
+    padding: 10px; /* Добавляем отступы внутри поля */
+    font-size: 16px; /* Устанавливаем размер шрифта */
+    border: 2px solid #ccc; /* Добавляем светло-серую границу */
+    border-radius: 5px; /* Закругляем углы */
+    background-color: #f1f1f1; /* Устанавливаем светло-серый цвет фона */
 }
 
-
 #search:focus {
-    border-color: #3b5998;
-    outline: none;
+    border-color: #3b5998; /* Изменяем цвет границы при фокусе */
+    outline: none; /* Убираем стандартную обводку */
 }
 
 .hidden {
-    display: none;
+    display: none; /* Скрываем элементы с этим классом */
 }
 
 .results {
-    margin: 20px;
+    margin: 20px; /* Добавляем отступы вокруг контейнера */
 }
 
 .result-item {
-    background-color: #ffffff;
-    border: 2px solid #f0f0f0;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    transition: transform 0.2s ease;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff; /* Устанавливаем белый цвет фона */
+    border: 2px solid #f0f0f0; /* Добавляем светло-серую границу */
+    border-radius: 8px; /* Закругляем углы */
+    padding: 15px; /* Добавляем отступы внутри элемента */
+    margin-bottom: 15px; /* Добавляем нижние отступы */
+    transition: transform 0.2s ease; /* Добавляем плавный переход для трансформации */
+    cursor: pointer; /* Изменяем курсор на указатель */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Добавляем легкую тень */
 }
 
 .result-item:hover {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    background-color: #f9f9f9; /* Изменяем цвет фона при наведении */
+    border: 1px solid #ddd; /* Изменяем цвет границы при наведении */
 }
 
 .result-title {
-    font-weight: bold;
-    margin-bottom: 5px;
-    font-size: 18px;
-    color: #3b5998;
+    font-weight: bold; /* Делаем текст жирным */
+    margin-bottom: 5px; /* Добавляем нижние отступы */
+    font-size: 18px; /* Устанавливаем размер шрифта */
+    color: #3b5998; /* Устанавливаем темно-синий цвет текста */
 }
 
 #back-to-results {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    background-color: #3b5998;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
+    display: block; /* Отображаем как блочный элемент */
+    margin: 20px auto; /* Центрируем по горизонтали и добавляем вертикальные отступы */
+    padding: 10px 20px; /* Добавляем отступы внутри кнопки */
+    background-color: #3b5998; /* Устанавливаем темно-синий цвет фона */
+    color: white; /* Устанавливаем белый цвет текста */
+    border: none; /* Убираем границу */
+    border-radius: 5px; /* Закругляем углы */
+    font-weight: bold; /* Делаем текст жирным */
+    cursor: pointer; /* Изменяем курсор на указатель */
 }
 
 #back-to-results:hover {
-    background-color: #2d4373;
+    background-color: #2d4373; /* Изменяем цвет фона при наведении */
 }
 
 .details-section {
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    width: 80%;
+    background-color: #ffffff; /* Устанавливаем белый цвет фона */
+    border: 1px solid #ddd; /* Добавляем светло-серую границу */
+    border-radius: 8px; /* Закругляем углы */
+    padding: 20px; /* Добавляем отступы внутри секции */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Добавляем легкую тень */
+    margin: 20px auto; /* Добавляем вертикальные отступы и центрируем по горизонтали */
+    width: 80%; /* Устанавливаем ширину секции */
+}
+
+.details-section .details-heading {
+    font-size: 18px; /* Устанавливаем размер шрифта */
+    font-weight: bold; /* Делаем текст жирным */
+    color: #3b5998; /* Устанавливаем темно-синий цвет текста */
+    margin-bottom: 20px; /* Добавляем нижние отступы */
 }
 
 .details-section .detail-item {
-    display: flex;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #f0f0f0;
+    display: flex; /* Используем flexbox для макета */
+    margin-bottom: 5px; /* Добавляем нижние отступы */
+    padding-bottom: 5px; /* Добавляем нижние отступы */
+    border-bottom: 1px solid #f0f0f0; /* Добавляем светло-серую границу */
+    align-items: center; /* Центрируем элементы по вертикали */
 }
 
 .details-section .detail-item:last-child {
-    border-bottom: none;
+    border-bottom: none; /* Убираем нижнюю границу для последнего элемента */
+    margin-bottom: 0; /* Убираем нижние отступы для последнего элемента */
 }
 
 .details-section .detail-label {
-    width: 200px;
-    font-weight: bold;
-    color: #3b5998;
-    text-transform: capitalize;
+    width: 200px; /* Устанавливаем ширину для метки */
+    font-weight: bold; /* Делаем текст жирным */
+    color: #3b5998; /* Устанавливаем темно-синий цвет текста */
+    text-transform: capitalize; /* Преобразуем текст в заглавные буквы */
+    white-space: nowrap; /* Предотвращаем перенос текста */
+    flex-shrink: 0; /* Предотвращаем сжатие метки */
 }
 
 .details-section .detail-value {
-    color: #6c757d;
-    font-size: 16px;
+    color: #6c757d; /* Устанавливаем темно-серый цвет текста */
+    font-size: 16px; /* Устанавливаем размер шрифта */
+    margin-left: 10px; /* Добавляем отступ слева */
+    flex-grow: 1; /* Позволяем значению занимать оставшееся пространство */
 }
 
 #scrollToTopButton {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 99;
-    font-size: 18px;
-    border: none;
-    outline: none;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 10px;
-    transition: opacity 0.3s;
+    display: none; /* Скрываем кнопку изначально */
+    position: fixed; /* Фиксируем позицию кнопки */
+    bottom: 20px; /* Позиционируем от нижнего края */
+    right: 20px; /* Позиционируем от правого края */
+    z-index: 99; /* Устанавливаем z-index */
+    font-size: 18px; /* Устанавливаем размер шрифта */
+    border: none; /* Убираем границу */
+    outline: none; /* Убираем обводку */
+    background-color: rgba(0, 0, 0, 0.5); /* Устанавливаем цвет фона */
+    color: white; /* Устанавливаем белый цвет текста */
+    cursor: pointer; /* Изменяем курсор на указатель */
+    padding: 10px; /* Добавляем отступы внутри кнопки */
+    border-radius: 10px; /* Закругляем углы */
+    transition: opacity 0.3s; /* Добавляем плавный переход для прозрачности */
 }
 
 #scrollToTopButton:hover {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8); /* Изменяем цвет фона при наведении */
 }
 
 .highlight {
-    background-color: yellow;
-    font-weight: bold;
+    background-color: yellow; /* Устанавливаем желтый цвет фона */
+    font-weight: bold; /* Делаем текст жирным */
 }
 
 .highlight-section {
-    border: 2px solid #4caf50;
-    padding: 10px;
-    background-color: #f0f8ff;
+    border: 2px solid #4caf50; /* Добавляем зеленую границу */
+    padding: 10px; /* Добавляем отступы внутри секции */
+    background-color: #f0f8ff; /* Устанавливаем светло-голубой цвет фона */
 }
 
 .em-item {
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Добавляем нижние отступы */
 }
 
 .em-detail {
-    font-size: 14px;
-    color: #6c757d;
-    display: inline-block;
+    font-size: 14px; /* Устанавливаем размер шрифта */
+    color: #6c757d; /* Устанавливаем темно-серый цвет текста */
+    display: inline-block; /* Отображаем как inline-block элемент */
+}
+
+.sensor-item {
+    margin-bottom: 10px; /* Добавляем нижние отступы */
+}
+
+.kvpia-detail {
+    font-size: 14px; /* Устанавливаем размер шрифта */
+    color: #6c757d; /* Устанавливаем темно-серый цвет текста */
+    display: inline-block; /* Отображаем как inline-block элемент */
 }
 
 .result-item {
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    transition: box-shadow 0.3s ease, transform 0.2s ease; /* Добавляем плавные переходы для тени и трансформации */
 }
 
 .result-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Смещаем элемент вверх при наведении */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Добавляем более сильную тень при наведении */
 }

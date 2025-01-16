@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
         displayResults(results, query);
     });
 
-    // Функция для очистки строки от специальных символов для поиска
     function cleanStringForSearch(str) {
         return str.toLowerCase().replace(/[-._ ]/g, '');
     }
@@ -27,20 +26,34 @@ document.addEventListener("DOMContentLoaded", () => {
     function searchInData(query) {
         if (!query) return [];
 
-        return data.filter(item => {
-            const matchesCode = cleanStringForSearch(item["Код обладнання"] || '').includes(query);
-            const matchesEM = item["ЕМ/КВПіА"].some(em =>
-                cleanStringForSearch(em["ЕМ"] || '').includes(query) ||
-                cleanStringForSearch(em["Номер Автомата"] || '').includes(query)
-            );
-            const matchesSensor = item["ЕМ/КВПіА"].some(em =>
+        const cleanQuery = cleanStringForSearch(query);
+
+        // Сначала ищем совпадения по "Код обладнання" и "ЕМ"
+        const emMatches = data.filter(item =>
+            cleanStringForSearch(item["Код обладнання"] || '').includes(cleanQuery) ||
+            item["ЕМ/КВПіА"].some(em =>
+                cleanStringForSearch(em["ЕМ"] || '').includes(cleanQuery) ||
+                cleanStringForSearch(em["Номер Автомата"] || '').includes(cleanQuery)
+            )
+        );
+
+        // Если совпадения по "ЕМ" найдены, возвращаем только их
+        if (emMatches.length > 0) {
+            return emMatches;
+        }
+
+        // Если совпадений по "ЕМ" нет, ищем только по датчикам
+        const sensorMatches = data.filter(item =>
+            item["ЕМ/КВПіА"].some(em =>
                 em["КВПіА"].some(kvp =>
-                    cleanStringForSearch(kvp["Назва датчика"] || '').includes(query) ||
-                    cleanStringForSearch(kvp["Номер сигналу"] || '').includes(query)
+                    cleanStringForSearch(kvp["Назва датчика"] || '').includes(cleanQuery) ||
+                    cleanStringForSearch(kvp["Номер сигналу"] || '').includes(cleanQuery)
                 )
-            );
-            return matchesCode || matchesEM || matchesSensor;
-        });
+            )
+        );
+
+        // Возвращаем только совпадения по датчикам
+        return sensorMatches;
     }
 
     function displayResults(results, query) {
@@ -51,153 +64,186 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const cleanQuery = cleanStringForSearch(query);
+
+        const containsEMMatches = results.some(item =>
+            cleanStringForSearch(item["Код обладнання"] || '').includes(cleanQuery) ||
+            item["ЕМ/КВПіА"].some(em =>
+                cleanStringForSearch(em["ЕМ"] || '').includes(cleanQuery) ||
+                cleanStringForSearch(em["Номер Автомата"] || '').includes(cleanQuery)
+            )
+        );
+
         results.forEach((item, index) => {
             const resultItem = document.createElement("div");
             resultItem.classList.add("result-item");
             resultItem.dataset.index = index;
 
-            const highlightedCode = highlightMatch(item["Код обладнання"], query);
-            let resultHTML = `
-                <div class="result-title">${highlightedCode}</div>
-                <div>Лінія: ${item["Лінія"]}</div>
-                ${item["ЕМ/КВПіА"].map(em => {
-                    const highlightedEM = highlightMatch(em["ЕМ"], query);
-                    const highlightedAutomata = highlightMatch(em["Номер Автомата"] || '', query);
-                    
-                    // Проверяем датчики для каждого ЕМ с учетом полного совпадения
-                    const highlightedSensors = em["КВПіА"].map(kvp => {
-                        const cleanSensorName = cleanStringForSearch(kvp["Назва датчика"] || '');
-                        const cleanSignalNumber = cleanStringForSearch(kvp["Номер сигналу"] || '');
-                        const cleanQuery = cleanStringForSearch(query);
+            if (containsEMMatches) {
+                const highlightedCode = highlightMatch(item["Код обладнання"], query);
+                let resultHTML = `
+                    <div class="result-title">${highlightedCode}</div>
+                    <div>Лінія: ${item["Лінія"]}</div>
+                    ${item["ЕМ/КВПіА"].map(em => {
+                        const highlightedEM = highlightMatch(em["ЕМ"], query);
+                        const highlightedAutomata = highlightMatch(em["Номер Автомата"] || '', query);
     
-                        if (cleanSensorName === cleanQuery || cleanSignalNumber === cleanQuery) {
-                            // Подсвечиваем датчик только при полном совпадении
-                            return `<div class="sensor-item"><strong>Датчик:</strong> ${highlightMatch(kvp["Назва датчика"], query)} (Сигнал: ${highlightMatch(kvp["Номер сигналу"], query)})</div>`;
-                        }
-                        return '';
-                    }).filter(Boolean).join('');
-                    
-                    return `
-                        <div class="em-item">
-                            ЕМ: ${highlightedEM}
-                            <span class="em-detail">(Номер шафи: ${em["Номер шафи EM"] || '-'})</span>
-                            ${highlightedAutomata ? `<br><span class="highlighted-automata">Номер автомата: ${highlightedAutomata}</span>` : ''}
-                            ${highlightedSensors}
-                        </div>
-                    `;
-                }).join('')}
-            `;
+                        return `
+                            <div class="em-item">
+                                ЕМ: ${highlightedEM}
+                                <span class="em-detail">(Номер шафи: ${em["Номер шафи EM"] || '-'})</span>
+                                ${highlightedAutomata ? `<br><span class="highlighted-automata">Номер автомата: ${highlightedAutomata}</span>` : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+                resultItem.innerHTML = resultHTML;
+            } else {
+                const sensorsHTML = item["ЕМ/КВПіА"]
+                    .flatMap(em => em["КВПіА"]
+                        .map(kvp => {
+                            const highlightedSensorName = highlightMatch(kvp["Назва датчика"], query);
+                            const highlightedSignalNumber = highlightMatch(kvp["Номер сигналу"], query);
 
-            resultItem.innerHTML = resultHTML;
+                            return `
+                                <div class="sensor-item">
+                                    <strong>Датчик:</strong> ${highlightedSensorName} 
+                                    <span class="kvpia-detail">(Номер шафи КВПіА: ${kvp["Номер шафи КВПіА"] || '-'})</span>
+                                    <span class="kvpia-detail">(Сигнал: ${highlightedSignalNumber || '-'})</span>
+                                `;
+                        })
+                    )
+                    .join('');
+                resultItem.innerHTML = `
+                    <div class="result-title">${highlightMatch(item["Код обладнання"], query)}</div>
+                    <div>Лінія: ${item["Лінія"]}</div>
+                    ${sensorsHTML}
+                `;
+            }
+
             resultItem.addEventListener("click", () => showDetails(item, query));
             resultsContainer.appendChild(resultItem);
         });
     }
 
-    // Функция для выделения совпадений в тексте с учетом исключений
     function highlightMatch(text, query) {
-        if (!text || !query) return text || '';
+        if (!text || !query) return text;
 
-        // Очищаем запрос для поиска, игнорируя пробелы, тире, точки и подчеркивания
         const cleanQuery = cleanStringForSearch(query);
+        const cleanText = cleanStringForSearch(text);
 
-        // Прямой поиск, учитывая, что текст не изменяется, а запрос очищается
-        const regex = new RegExp(cleanQuery.split('').join('[^a-z0-9]*'), 'gi');
+        let result = '';
+        let lastIndex = 0;
 
-        // Возвращаем текст с подсвеченными совпадениями
-        return text.replace(regex, match => `<span class="highlight">${match}</span>`);
+        for (let i = 0; i < cleanText.length; i++) {
+            if (cleanText.substring(i, i + cleanQuery.length) === cleanQuery) {
+                result += text.substring(lastIndex, i) + '<span class="highlight">' + text.substring(i, i + cleanQuery.length) + '</span>';
+                i += cleanQuery.length - 1;
+                lastIndex = i + 1;
+            }
+        }
+
+        return result + text.substring(lastIndex);
     }
+
 
     function showDetails(item, query) {
         previousScrollPosition = window.scrollY;
 
         resultsContainer.classList.add("hidden");
         detailsContainer.classList.remove("hidden");
+        detailsContainer.classList.add("details-section");
 
-        let detailsHtml = `<h3 class="details-heading">Деталі для ${item["Код обладнання"]}</h3>`;
-        detailsHtml += `<div><strong>Цех:</strong> ${item["Цех"]}</div>`;
-        detailsHtml += `<div><strong>Лінія:</strong> ${item["Лінія"]}</div>`;
-        detailsHtml += `<div><strong>Назва обладнання:</strong> ${item["Назва обладнання (українською)"]}</div>`;
+        let detailsHtml = `<h3 class="details-heading">Детали для ${item["Код обладнання"]}</h3>`;
+        detailsHtml += `<div class="detail-item"><span class="detail-label">Цех:</span><span class="detail-value">${item["Цех"]}</span></div>`;
+        detailsHtml += `<div class="detail-item"><span class="detail-label">Линия:</span><span class="detail-value">${item["Лінія"]}</span></div>`;
+        detailsHtml += `<div class="detail-item"><span class="detail-label">Название оборудования:</span><span class="detail-value">${item["Назва обладнання (українською)"]}</span></div>`;
 
-        let foundSensor = false;
-        let sensorOffset = 0;
-        let highlightedEmId = null; // ID ЕМ, содержащего подсвеченный датчик
+        let scrollTo = null;
+        let hasEm = false;
+        let hasKvpia = false;
 
         item["ЕМ/КВПіА"].forEach((em, index) => {
-            const emId = `em-details-${index}`;
-            const isEmHighlighted = cleanStringForSearch(em["ЕМ"] || '').includes(cleanStringForSearch(query));
-
-            let emContent = `
-                <div style="margin-top: 20px;">
-                    <h4 class="${isEmHighlighted ? 'highlight-section' : ''}">
-                        ЕМ: ${highlightMatch(em["ЕМ"], query)}
-                        <button class="toggle-details" data-target="${emId}">Деталі</button>
-                    </h4>
-                    <div id="${emId}" class="hidden"> <!-- Всегда скрыты по умолчанию -->
-                        <div><strong>Потужність Квт:</strong> ${em["Потужність Квт"]}</div>
-                        <div><strong>Сила струму:</strong> ${em["Сила струму"]}</div>
-                        <div><strong>Номер Автомата:</strong> ${highlightMatch(em["Номер Автомата"], query)}</div>
-                        <div><strong>Пристрій пуску:</strong> ${em["Пристрій пуску"]}</div>
-                        <div><strong>Номер шафи EM:</strong> ${em["Номер шафи EM"]}</div>
-                        <div><strong>Відмітка EM:</strong> ${em["Відмітка EM"]}</div>
-                        <div><strong>Квадрат ЕМ:</strong> ${em["Квадрат ЕМ"]}</div>
-                        <div><strong>Посилання ЕМ:</strong> ${em["Посилання ЕМ"]}</div>
-                        <div><strong>КВПіА:</strong></div>
-                        <ul>
-                            ${em["КВПіА"].map((kvp, kvpIndex) => {
-                                const cleanSensorName = cleanStringForSearch(kvp["Назва датчика"] || '');
-                                const cleanSignalNumber = cleanStringForSearch(kvp["Номер сигналу"] || '');
-                                const cleanQuery = cleanStringForSearch(query);
-                                const isSensorHighlighted = cleanSensorName.includes(cleanQuery) || cleanSignalNumber.includes(cleanQuery);
-    
-                                if (isSensorHighlighted && !foundSensor) {
-                                    foundSensor = true;
-                                    highlightedEmId = emId; // Сохраняем ID ЕМ, содержащего подсвеченный датчик
-                                    sensorOffset = index; // Индекс ЕМ, содержащего датчик
-                                }
-    
-                                return `
-                                    <li class="${isSensorHighlighted ? 'highlight-section' : ''}" id="sensor-${index}-${kvpIndex}" style="margin-bottom: 10px;">
-                                        <div><strong>Назва датчика:</strong> ${highlightMatch(kvp["Назва датчика"], query)}</div>
-                                        <div><strong>Номер сигналу:</strong> ${highlightMatch(kvp["Номер сигналу"], query)}</div>
-                                        <div><strong>Модель датчика:</strong> ${kvp["Модель датчика"]}</div>
-                                        <div><strong>Номер шафи КВПіА:</strong> ${kvp["Номер шафи КВПіА"]}</div>
-                                        <div><strong>Відмітка КВПіА:</strong> ${kvp["Відмітка КВПіА"]}</div>
-                                        <div><strong>Квадрат КВПіА:</strong> ${kvp["Квадрат КВПіА"]}</div>
-                                        <div><strong>Посилання КВПіА:</strong> ${kvp["Посилання КВПіА"]}</div>
-                                    </li>
-                                `;
-                            }).join('')}
-                        </ul>
-                        <div><strong>Підшипники:</strong></div>
-                        <ul>
-                            ${Object.entries(em["Підшипники"]).map(([key, value]) => `
-                                <li><strong>${key}:</strong> ${value}</li>
-                            `).join('')}
-                        </ul>
+            // Проверка наличия ЕМ
+            if (em["ЕМ"]) {
+                hasEm = true;
+                const emId = `em-details-${index}`;
+                let emHighlightClass = '';
+                detailsHtml += `
+                    <div style="margin-top: 20px;">
+                        <h4 class="${emHighlightClass}" style="color: darkred;">
+                            • ЕМ: ${highlightMatch(em["ЕМ"], query)}
+                            <button class="toggle-details" data-target="${emId}">Деталі</button>
+                        </h4>
+                        <div id="${emId}" class="hidden">
+                            <div><strong>Потужність Квт:</strong> ${em["Потужність Квт"] || '-'}</div>
+                            <div><strong>Сила струму:</strong> ${em["Сила струму"] || '-'}</div>
+                            <div><strong>Номер Автомата:</strong> ${highlightMatch(em["Номер Автомата"] || '', query)}</div>
+                            <div><strong>Пристрій пуску:</strong> ${em["Пристрій пуску"] || '-'}</div>
+                            <div><strong>Номер шафи EM:</strong> ${em["Номер шафи EM"] || '-'}</div>
+                            <div><strong>Відмітка EM:</strong> ${em["Відмітка EM"] || '-'}</div>
+                            <div><strong>Квадрат ЕМ:</strong> ${em["Квадрат ЕМ"] || '-'}</div>
+                            <div><strong>Посилання ЕМ:</strong> ${em["Посилання ЕМ"] || '-'}</div>
+                            <div><strong>Підшипники:</strong></div>
+                            <ul>
+                                ${Object.entries(em["Підшипники"]).map(([key, value]) => `
+                                    <li><strong>${key}:</strong> ${value}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
 
-            detailsHtml += emContent;
+            // Проверка наличия КВПіА
+            if (em["КВПіА"] && em["КВПіА"].length > 0) {
+                hasKvpia = true;
+                const kvpiaId = `kvpia-details-${index}`;
+                detailsHtml += `
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: darkblue;"> 
+                            > КВПіА: 
+                            <button class="toggle-details" data-target="${kvpiaId}">Деталі</button>
+                        </h4>
+                        <div id="${kvpiaId}" class="hidden">
+                `;
+
+                em["КВПіА"].forEach((kvp, kvpIndex) => {
+                    const sensorId = `sensor-${index}-${kvpIndex}`;
+                    detailsHtml += `
+                        <div id="${sensorId}" style="margin-bottom: 10px;">
+                            <div><strong>Назва датчика:</strong> ${highlightMatch(kvp["Назва датчика"], query)}</div>
+                            <div><strong>Номер сигналу:</strong> ${highlightMatch(kvp["Номер сигналу"] || '', query)}</div>
+                            <div><strong>Модель датчика:</strong> ${kvp["Модель датчика"] || '-'}</div>
+                            <div><strong>Номер шафи КВПіА:</strong> ${kvp["Номер шафи КВПіА"] || '-'}</div>
+                            <div><strong>Відмітка КВПіА:</strong> ${kvp["Відмітка КВПіА"] || '-'}</div>
+                            <div><strong>Квадрат КВПіА:</strong> ${kvp["Квадрат КВПіА"] || '-'}</div>
+                            <div><strong>Посилання КВПіА:</strong> ${kvp["Посилання КВПіА"] || '-'}</div>
+                        </div>
+                    `;
+                    if (cleanStringForSearch(kvp["Назва датчика"]).includes(cleanStringForSearch(query))) {
+                        scrollTo = document.getElementById(sensorId);
+                    }
+                });
+
+                detailsHtml += '</div></div>';
+            }
         });
+
+        // Если нет ни ЕМ, ни КВПіА
+        if (!hasEm && !hasKvpia) {
+            detailsHtml += "<div>Нет деталей по ЕМ или датчикам КВПіА.</div>";
+        }
 
         detailsContainer.innerHTML = detailsHtml;
         addToggleDetailsListeners();
         backToResultsButton.classList.remove("hidden");
 
-        // Раскрываем и скроллим к нужному ЕМ и датчику
-        if (foundSensor) {
+        // Прокрутка к соответствующему элементу, если он найден
+        if (scrollTo) {
             setTimeout(() => {
-                const emElement = document.getElementById(highlightedEmId);
-                if (emElement) {
-                    emElement.classList.remove('hidden'); // Раскрываем ЕМ
-                    const sensorElement = document.getElementById(`sensor-${sensorOffset}-0`); // Предполагаем, что датчики идут по порядку
-                    if (sensorElement) {
-                        sensorElement.scrollIntoView({ behavior: "smooth", block: "center" });
-                    }
-                }
-            }, 100); // Задержка для рендеринга DOM
+                scrollTo.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 100);
         }
     }
 
