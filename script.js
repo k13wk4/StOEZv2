@@ -154,10 +154,10 @@ document.addEventListener("DOMContentLoaded", () => {
         detailsContainer.classList.remove("hidden");
         detailsContainer.classList.add("details-section");
 
-        let detailsHtml = `<h3 class="details-heading">Детали для ${item["Код обладнання"]}</h3>`;
+        let detailsHtml = `<h3 class="details-heading">Деталі для ${item["Код обладнання"]}</h3>`;
         detailsHtml += `<div class="detail-item"><span class="detail-label">Цех:</span><span class="detail-value">${item["Цех"]}</span></div>`;
-        detailsHtml += `<div class="detail-item"><span class="detail-label">Линия:</span><span class="detail-value">${item["Лінія"]}</span></div>`;
-        detailsHtml += `<div class="detail-item"><span class="detail-label">Название оборудования:</span><span class="detail-value">${item["Назва обладнання (українською)"]}</span></div>`;
+        detailsHtml += `<div class="detail-item"><span class="detail-label">Лінія:</span><span class="detail-value">${item["Лінія"]}</span></div>`;
+        detailsHtml += `<div class="detail-item"><span class="detail-label">Назва обладнання:</span><span class="detail-value">${item["Назва обладнання (українською)"]}</span></div>`;
 
         let scrollTo = null;
         let hasEm = false;
