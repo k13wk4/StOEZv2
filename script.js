@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const detailsContainer = document.getElementById("details-container");
     const backToResultsButton = document.getElementById("back-to-results");
     const scrollToTopButton = document.getElementById("scrollToTopButton");
+    const searchContainer = document.getElementById("search-container");
 
     let data = [];
     let previousScrollPosition = 0;
@@ -153,6 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
         resultsContainer.classList.add("hidden");
         detailsContainer.classList.remove("hidden");
         detailsContainer.classList.add("details-section");
+        searchContainer.classList.add("hidden");
 
         let detailsHtml = `<h3 class="details-heading">Деталі для ${item["Код обладнання"]}</h3>`;
         detailsHtml += `<div class="detail-item"><span class="detail-label">Цех:</span><span class="detail-value">${item["Цех"]}</span></div>`;
@@ -269,6 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
     backToResultsButton.addEventListener("click", () => {
         detailsContainer.classList.add("hidden");
         resultsContainer.classList.remove("hidden");
+        searchContainer.classList.remove("hidden");
         backToResultsButton.classList.add("hidden");
         window.scrollTo(0, previousScrollPosition);
     });
