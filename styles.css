@@ -14,6 +14,16 @@ header {
     border-bottom: 3px solid #2d4373; /* Добавляем нижнюю границу */
 }
 
+header a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+}
+header a:hover {
+    text-decoration: none;
+}
+
+
 .search-container {
     display: flex; /* Используем flexbox для макета */
     justify-content: center; /* Центрируем содержимое по горизонтали */
